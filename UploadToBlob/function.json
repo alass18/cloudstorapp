@@ -1,0 +1,24 @@
+{
+  "bindings": [
+    {
+      "authLevel": "function",
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in",
+      "route": "uploads/{name}"
+    },
+    {
+      "name": "return",
+      "type": "http",
+      "direction": "out"
+    },
+    {
+      "type": "table",
+      "name": "outRecords",
+      "tableName": "UsersFiles",
+      "connection": "cloudstoraa47_STORAGE",
+      "direction": "out"
+    }
+  ],
+  "disabled": false
+}

@@ -1,0 +1,11 @@
+<div protected>
+    <h1>This is the dashboard page.</h1>
+    <button (click)="logOut()">Logout</button>
+</div>
+<div>
+    <h1>Click to Get List of files</h1>
+    <button (click)="getItems()">Get</button>
+</div>
+<ul>
+    <li *ngFor="let file of files"><a href="{file.Uri}">{{file.Name}}</a></li>
+</ul>
