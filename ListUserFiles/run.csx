@@ -25,7 +25,7 @@ public static async Task<IEnumerable<UserFilesRecord>> GetUserFiles(string user,
     CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
     // Create the CloudTable object that represents the "people" table.
-    CloudTable table = tableClient.GetTableReference("UsersFiles");
+    CloudTable table = tableClient.GetTableReference("UserFiles");
 
     // Construct the query operation for all customer entities where PartitionKey="Smith".
     TableQuery<UserFilesRecord> query = new TableQuery<UserFilesRecord>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, user));

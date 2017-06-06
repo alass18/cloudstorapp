@@ -18,7 +18,7 @@
     {
       "type": "table",
       "name": "outRecords",
-      "tableName": "UsersFiles",
+      "tableName": "UserFiles",
       "connection": "cloudstoraa47_STORAGE",
       "direction": "out"
     }

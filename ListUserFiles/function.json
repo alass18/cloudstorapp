@@ -5,7 +5,10 @@
       "name": "req",
       "type": "httpTrigger",
       "direction": "in",
-      "route": "{username}/files/"
+      "route": "{username}/files/",
+      "methods": [
+        "get"
+      ]
     },
     {
       "name": "return",

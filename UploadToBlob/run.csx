@@ -35,32 +35,33 @@ static string ConnectionString = CloudConfigurationManager.GetSetting(Connection
 
 public static async Task<HttpResponseMessage> 
             Run(HttpRequestMessage req, TraceWriter log, 
-                ICollector<UserFilesRecord> outRecords, string name)
+                ICollector<UserFilesRecord> outRecords, string username)
 {
     //CloudConfigurationManager.SetSetting("FUNCTION_APP_EDIT_MODE", "readonly");
     log.Info("C# HTTP trigger function processed a request.");
     // cette partie du code c'est pour remedier a un bug qui ce declenche 
     // lors de la lecture du contenu de la requette, precisant que le contenu
     // ne contient pas de fin , cad : il faut ajouter /r/n 
-    Stream reqStream = await req.Content.ReadAsStreamAsync(); // on recupere le flux de donnee 
-    MemoryStream tempStream = new MemoryStream();
-    reqStream.CopyTo(tempStream); // on copie le flux vers un nouveau espace en memoire 
-    tempStream.Seek(0,SeekOrigin.End); // on pointe sur la derniere position du contenu 
-    StreamWriter writer = new StreamWriter(tempStream); // on passe le stream temporaire a un objet qui va ecrire des byte dessus
-    writer.WriteLine(); // on ajoute un retour de ligne "/r/n" au contenu du flux 
-    writer.Flush(); 
-    tempStream.Position = 0; // on se pointe sur la position 0 pour recommencer la copie 
+    // on recupere le flux de donnee 
+    //MemoryStream tempStream = new MemoryStream();
+    //reqStream.CopyTo(tempStream); // on copie le flux vers un nouveau espace en memoire 
+    //tempStream.Seek(0,SeekOrigin.End); // on pointe sur la derniere position du contenu 
+    //StreamWriter writer = new StreamWriter(tempStream); // on passe le stream temporaire a un objet qui va ecrire des byte dessus
+    //writer.WriteLine(); // on ajoute un retour de ligne "/r/n" au contenu du flux 
+    //writer.Flush(); 
+    //tempStream.Position = 0; // on se pointe sur la position 0 pour recommencer la copie 
     /*StreamContent streamContent = new StreamContent(tempStream);
     foreach(var header in req.Content.Headers)
     {
         streamContent.Headers.Add(header.Key, header.Value);
-    }*/   
-    var parser = new MultipartFormDataParser(tempStream, Encoding.UTF8);
+    }*/   // je laisse le commentaire 
+    Stream reqStream = await req.Content.ReadAsStreamAsync(); 
+    var parser = new MultipartFormDataParser(reqStream, Encoding.UTF8);
     // le MultipartFormDataParser est un objet qui fais partie de la librairies HttpMultipartParser
     // elle sert a decomposer le contenu d'une requette http POST avec un contenu multipart/form-data
     // est c'est ce qu'on utilise pour l'upload des fichiers
     //
-    string containerName = String.Format("{0}-files", name); // ont prepare le nom du container sur le storage
+    string containerName = String.Format("{0}-files", username); // ont prepare le nom du container sur le storage
     string filename = "";
     var parsedFiles = parser.Files; 
     foreach(var current in parsedFiles)
@@ -95,7 +96,7 @@ public static async Task<HttpResponseMessage>
         var fileuri = await UploadToBlob(containerName, filename, current.Data, log);// on appel la fonction pour gerer l'upload est on recupere 
                                                                        // le lien pour acceder au fichier, ainsi on l'ajoute a l'enregistrement
         var record = new UserFilesRecord(){
-                PartitionKey = name,
+                PartitionKey = username,
                 RowKey = Guid.NewGuid().ToString(), 
                 ContainerName = containerName,
                 ParentFolder = parentFolder  ,              
@@ -160,7 +161,7 @@ public static bool BlobExists(string containerName, string key, TraceWriter log)
                   .GetBlockBlobReference(key)
                   .Exists();  
     log.Info(Convert.ToString(exists));
-
+ 
     return exists;
 }
 
